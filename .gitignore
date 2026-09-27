@@ -1,0 +1,11 @@
+build/
+.DS_Store
+
+# 签名相关：证书、私钥、公证密钥、本地签名配置一律不入库
+.signing.env
+*.p12
+*.cer
+*.certSigningRequest
+*.key
+*.p8
+*.mobileprovision

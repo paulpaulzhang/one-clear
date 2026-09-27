@@ -9,8 +9,9 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
+IDENTITY_FROM_ENV="${SIGN_IDENTITY:-}"
 [ -f .signing.env ] && source .signing.env
-SIGN_IDENTITY="${SIGN_IDENTITY:--}"
+SIGN_IDENTITY="${IDENTITY_FROM_ENV:-${SIGN_IDENTITY:--}}"
 APP=build/OneClear.app
 
 rm -rf build

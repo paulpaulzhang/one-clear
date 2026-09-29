@@ -27,6 +27,7 @@ struct MenuTogglesView: View {
     let setCleaning: (Bool) -> Void
     let setScreenBlack: (Bool) -> Void
     let setKeyboardLocked: (Bool) -> Void
+    let setLidAwake: (Bool) -> Void
 
     var body: some View {
         VStack(spacing: 4) {
@@ -37,6 +38,9 @@ struct MenuTogglesView: View {
                 isOn: controller.screenBlack, set: setScreenBlack)
             row("锁定键盘", subtitle: nil, icon: "keyboard",
                 isOn: controller.keyboardLocked, set: setKeyboardLocked)
+            Divider().padding(.vertical, 4)
+            row("合盖不休眠", subtitle: "合上盖子也保持联网运行", icon: "laptopcomputer",
+                isOn: controller.lidAwake, set: setLidAwake)
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 8)
@@ -77,14 +81,15 @@ struct MainView: View {
             VStack(spacing: 6) {
                 Text("One Clear")
                     .font(.system(size: 24, weight: .bold))
-                Text("擦屏幕、擦键盘时用：锁住键盘，所有屏幕变黑")
+                Text("擦屏幕时一键黑屏锁键盘，出门合盖也能保持联网")
                     .font(.system(size: 13))
                     .foregroundStyle(.secondary)
             }
             permissionRow
             Button("开始清洁", action: controller.startCleaning)
                 .buttonStyle(PrimaryButtonStyle(minWidth: 280))
-            Text("关闭窗口后 One Clear 会留在顶部菜单栏，随时点图标使用")
+            lidAwakeCard
+            Text("关闭窗口后 One Clear 会留在顶部菜单栏，以上功能都能在菜单里开关")
                 .font(.system(size: 11))
                 .foregroundStyle(.tertiary)
         }
@@ -92,6 +97,36 @@ struct MainView: View {
         .padding(.top, 36)
         .padding(.bottom, 28)
         .frame(width: 440)
+    }
+
+    private var lidAwakeCard: some View {
+        let on = controller.lidAwake
+        return HStack(alignment: .top, spacing: 12) {
+            Image(systemName: "laptopcomputer")
+                .font(.system(size: 15, weight: .medium))
+                .foregroundStyle(on ? .white : .primary)
+                .frame(width: 32, height: 32)
+                .background(Circle().fill(on ? brandBlue : Color.primary.opacity(0.1)))
+            VStack(alignment: .leading, spacing: 4) {
+                Text(on ? "合盖不休眠 · 已开启" : "合盖不休眠")
+                    .font(.system(size: 14, weight: .semibold))
+                Text(on
+                     ? "合上盖子也不会睡眠。用电池且电量降到 \(LidAwakeController.lowBatteryPercent)% 时自动关闭，完全退出 One Clear 时也会恢复"
+                     : "合上盖子也保持联网，适合出门连手机热点远程操作。首次开启需输入一次管理员密码")
+                    .font(.system(size: 12))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Spacer(minLength: 8)
+            Toggle("", isOn: Binding(get: { on }, set: controller.setLidAwake))
+                .toggleStyle(.switch)
+                .labelsHidden()
+        }
+        .padding(14)
+        .background(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(Color.primary.opacity(0.05))
+        )
     }
 
     private var permissionRow: some View {

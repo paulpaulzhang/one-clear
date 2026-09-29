@@ -9,6 +9,7 @@ A tiny macOS menu bar app that locks every keyboard and blacks out every display
 - **清洁模式**：锁键盘 + 所有屏幕黑屏，一个开关搞定
 - **黑屏**：覆盖所有显示器（含菜单栏），屏幕保持亮着、不会自动息屏，插拔显示器自动跟随
 - **锁定键盘**：内建和外接键盘全部生效，包括修饰键和亮度 / 音量 / 媒体键
+- **合盖不休眠**：带电脑出门时合上盖子也不睡眠、保持联网（比如连手机热点远程操作）。首次开启输一次管理员密码，会在 `/etc/sudoers.d/oneclear` 装一条只放行 `pmset -a disablesleep 0/1` 的规则，之后开关不再要密码；完全退出 App 时自动恢复，电池电量降到 10% 也会自动关闭。不再需要时运行 `sudo rm /etc/sudoers.d/oneclear` 删除这条规则
 - 常驻菜单栏：关闭窗口、在 Dock 里退出都只会收回菜单栏；菜单里的「完全退出」才真正退出
 
 ## 安装
@@ -36,10 +37,10 @@ SIGN_IDENTITY="Apple Development: Your Name (XXXXXXXXXX)"
 
 ## 发布
 
-推送 `v*` 格式的 tag，GitHub Action 会自动构建、签名、公证并发布 Release：
+推送 `v*` 格式的**带注释** tag，GitHub Action 会自动构建、签名、公证并发布 Release，tag 注释的正文就是这个版本的更新日志（第一行标题不会写进去）：
 
 ```bash
-git tag v1.0.0 && git push origin v1.0.0
+git tag -a v1.1.0 -F notes.txt && git push origin v1.1.0
 ```
 
 需要在仓库 Secrets 里配置：

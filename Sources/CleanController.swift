@@ -5,13 +5,20 @@ final class CleanController: ObservableObject {
     @Published private(set) var keyboardLocked = false
     @Published private(set) var screenBlack = false
     @Published private(set) var accessibilityGranted = AXIsProcessTrusted()
+    @Published private(set) var lidAwake = false
 
     var onNeedsAccessibility: (() -> Void)?
 
     var isCleaning: Bool { keyboardLocked && screenBlack }
 
+    init() {
+        lidAwakeController.restoreIfLeftOn()
+        lidAwakeController.onAutoDisabled = { [weak self] in self?.lidAwake = false }
+    }
+
     private let keyboard = KeyboardBlocker()
     private let blackout = BlackoutController()
+    private let lidAwakeController = LidAwakeController()
     private var displaySleepAssertion: IOPMAssertionID?
 
     func startCleaning() {
@@ -49,6 +56,21 @@ final class CleanController: ObservableObject {
             allowDisplaySleep()
         }
         screenBlack = black
+    }
+
+    func setLidAwake(_ on: Bool) {
+        if on {
+            lidAwakeController.enable { [weak self] ok in self?.lidAwake = ok }
+        } else {
+            lidAwakeController.disable()
+            lidAwake = false
+        }
+    }
+
+    /// 真正退出进程时调用：清洁 + 合盖不休眠一起关，后者是系统级设置，不关会一直生效
+    func shutdown() {
+        stopAll()
+        setLidAwake(false)
     }
 
     func refreshAccessibility() {

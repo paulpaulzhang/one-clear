@@ -26,7 +26,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
 
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
         if quitRequested || isSystemSessionEnding() {
-            controller.stopAll()
+            controller.shutdown()
             return .terminateNow
         }
         mainWindow?.close()
@@ -122,6 +122,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             },
             setKeyboardLocked: { [weak self] on in
                 self?.runFromMenu(closeMenu: on && !AXIsProcessTrusted()) { $0.setKeyboardLocked(on) }
+            },
+            setLidAwake: { [weak self] on in
+                // 首次开启会弹管理员密码框，先收起菜单
+                self?.runFromMenu(closeMenu: on) { $0.setLidAwake(on) }
             }
         ))
         togglesView.frame = NSRect(origin: .zero, size: togglesView.fittingSize)

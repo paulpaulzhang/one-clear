@@ -62,7 +62,15 @@ jobs:
         run: |
           ZIP="OneClear-${GITHUB_REF_NAME}.zip"
           ditto -c -k --keepParent build/OneClear.app "$ZIP"
-          gh release create "$GITHUB_REF_NAME" "$ZIP" --title "One Clear $GITHUB_REF_NAME" --generate-notes
+          # 更新日志取带注释 tag 的正文；checkout 拿到的 tag 可能丢了注释，先重新拉一次
+          git fetch --force origin "refs/tags/${GITHUB_REF_NAME}:refs/tags/${GITHUB_REF_NAME}"
+          git tag -l --format='%(contents:body)' "$GITHUB_REF_NAME" > "$RUNNER_TEMP/notes.md"
+          if [ -s "$RUNNER_TEMP/notes.md" ]; then
+            NOTES=(--notes-file "$RUNNER_TEMP/notes.md")
+          else
+            NOTES=(--generate-notes)
+          fi
+          gh release create "$GITHUB_REF_NAME" "$ZIP" --title "One Clear $GITHUB_REF_NAME" "${NOTES[@]}"
 
       - name: 删除临时钥匙串
         if: always()

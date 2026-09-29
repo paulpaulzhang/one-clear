@@ -37,10 +37,10 @@ SIGN_IDENTITY="Apple Development: Your Name (XXXXXXXXXX)"
 
 ## 发布
 
-推送 `v*` 格式的**带注释** tag，GitHub Action 会自动构建、签名、公证并发布 Release，tag 注释的正文就是这个版本的更新日志（第一行标题不会写进去）：
+推送 `v*` 格式的**带注释** tag，GitHub Action 会自动构建、签名、公证并发布 Release，tag 注释的正文就是这个版本的更新日志（第一行标题不会写进去；`--cleanup=whitespace` 防止 `###` 小标题被当成注释删掉）：
 
 ```bash
-git tag -a v1.1.0 -F notes.txt && git push origin v1.1.0
+git tag -a v1.1.0 --cleanup=whitespace -F notes.txt && git push origin v1.1.0
 ```
 
 需要在仓库 Secrets 里配置：

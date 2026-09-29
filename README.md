@@ -35,24 +35,6 @@ SIGN_IDENTITY="Apple Development: Your Name (XXXXXXXXXX)"
 
 修改应用图标：编辑 `scripts/make-icon.swift` 后运行 `swift scripts/make-icon.swift`。
 
-## 发布
-
-推送 `v*` 格式的**带注释** tag，GitHub Action 会自动构建、签名、公证并发布 Release，tag 注释的正文就是这个版本的更新日志（第一行标题不会写进去；`--cleanup=whitespace` 防止 `###` 小标题被当成注释删掉）：
-
-```bash
-git tag -a v1.1.0 --cleanup=whitespace -F notes.txt && git push origin v1.1.0
-```
-
-需要在仓库 Secrets 里配置：
-
-| Secret | 内容 |
-|---|---|
-| `DEVELOPER_ID_P12_BASE64` | Developer ID Application 证书（含私钥）导出的 .p12，base64 编码 |
-| `DEVELOPER_ID_P12_PASSWORD` | 上面 .p12 的密码 |
-| `NOTARY_API_KEY_P8_BASE64` | App Store Connect API Key（.p8），base64 编码 |
-| `NOTARY_API_KEY_ID` | API Key ID |
-| `NOTARY_API_ISSUER_ID` | API Issuer ID |
-
 ## License
 
 [MIT](LICENSE)
